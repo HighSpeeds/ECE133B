@@ -1,0 +1,91 @@
+% \documentclass[11pt]{article}
+% \author{Lawrence Liu}
+% \usepackage{subcaption}
+% \usepackage{graphicx}
+% \usepackage{amsmath,amssymb,stmaryrd}
+% \usepackage{physics}
+% \usepackage{pdfpages}
+% \newcommand{\Laplace}{\mathscr{L}}
+% \setlength{\parskip}{\baselineskip}%
+% \setlength{\parindent}{0pt}%
+% \usepackage{xcolor}
+% \usepackage{listings}
+% \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+% \usepackage{amssymb}
+% \lstdefinestyle{mystyle}{
+%     backgroundcolor=\color{backcolour}}
+% \lstset{style=mystyle}
+\include{"../preamble.tex"}
+\title{ECE 133B HW1}
+\begin{document}
+\maketitle
+\section{Problem 1}
+Let $A_i$ denote the ith column of $A$, and $C'_i$ denote the ith column of $C$ that is not 
+in the null space of $A$, and $B'_i$ denote the ith column of $B$ that is not in the null space of $A$. We have that for any $w\in W+v$.
+$$w = \sum_{i=1}^{n}A_ix_i+\sum_{i=1}^{m}B'_iy_i+\sum_{i=1}^{p}C'_iz_i$$
+Therefore we can see that $[A,B,C]$ is a basis for $W+V$. 
+
+\section*{Problem 2}
+\subsection*{(a)}
+If we want a path to be between any two nodes, we would need at least $n-1$ edges with one connected to each node. With these we could 
+form a path between any two nodes. Therefore there will be $n-1$ linearly independent vectors in the node incidence matrix $A$, 
+and the other $m-n+1$ vectors will be linear combinations of these. Therefore the rank of $A$ is $n-1$.
+\subsection*{(b)}
+Then the rank would be $\sum_{i=1}^{n'}(n_i-1)$ where $n'$ is the number of clusters and $n_i$ is the number of nodes in the $i$th cluster
+this is because each cluster has at least $n_i-1$ linearly independent vectors in the node incidence matrix $A$, and since these cluster's
+are not connected, their vectors are linearly independent. Therefore the rank of $A$ is $\sum_{i=1}^{n'}(n_i-1)$.
+\section*{Problem 3}
+\subsection*{(a)}
+Let $AB=C$, then we have that each column of $C$ is a linear combinations of the coloumns of $A$, ie, the ith 
+column of $C$, $C_i$ is:
+$$
+C_i = \sum_{j=1}^{n}A_{j}B_{ij}
+$$
+where $A_j$ is the jth column of $A$ and $B_{ij}$ is the element in the ith row and jth column of $B$. Thus we have that:
+$$
+\text{rank}(AB)\leq \text{rank}(A)
+$$
+Likewise if we transpose we get that 
+$$
+\text{rank}((AB)^T)=\text{rank}(B^TA^T)\leq \text{rank}(B^T)
+$$
+Since row rank is the same as column rank, we have that:
+$$
+\text{rank}(AB)\leq \text{rank}(B)
+$$
+Therefore we have that:
+$$
+\text{rank}(AB)\leq \min\left[\text{rank}(A), \text{rank}(B)\right] 
+$$
+\subsection*{(b)}
+We have that the columns of $A+B$ are linear combinations of the columns of $A$ and $B$, therefore they are drawn from 
+the combined vector space of the span of $A$ and $B$. Therefore we have that:
+$$
+\text{rank}(A+B)\leq \text{rank}(A)+\text{rank}(B)
+$$
+\section*{Problem 4}
+We have that 
+$$A^2=A$$
+$$BCBC=BC$$
+$$B^{\dagger}BCBCC^{\dagger}=B^{\dagger}BCC^{\dagger}$$
+$$IBCI=I$$
+$$BC=I$$
+We can write the trace of BC as
+$$
+\text{tr}(BC)=\sum_{i=1}^{n}\sum_{i=1}^{m}B_{ij}C_{ij}
+$$
+if B is a (n x m) matrix and C is a (m x n) matrix. We have that 
+\begin{align*}
+    \text{tr}(BC)&=\sum_{i=1}^{n}\sum_{i=1}^{m}B_{ij}C_{ij}\\
+    &=\sum_{i=1}^{m}\sum_{i=1}^{n}C_{ij}B_{ij}\\
+    &=\text{tr}(CB)
+\end{align*}
+Therefore we have that 
+$$
+\text{tr}(BC)=\text{tr}(CB)=\text{tr}(I)=n
+$$
+And thus 
+$$
+\text{tr}(A)=\text{tr}(BC)=n
+$$
+\end{document}
