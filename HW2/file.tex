@@ -1,0 +1,104 @@
+\documentclass[11pt]{article}
+\author{Lawrence Liu}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,stmaryrd}
+\usepackage{physics}
+\usepackage{pdfpages}
+\newcommand{\Laplace}{\mathscr{L}}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\usepackage{xcolor}
+\usepackage{listings}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\usepackage{amssymb}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour}}
+\lstset{style=mystyle}
+\title{ECE 133B HW2}
+\begin{document}
+\maketitle
+\section{Problem 1}
+We have that 
+$$A^{\dagger} = C^T(CC^T)^{-1}(B^TB)^{-1}B^T$$
+Therefore we have that 
+\begin{align*}
+    AA^{\dagger}A &= BC C^T(CC^T)^{-1}(B^TB)^{-1}B^T B C\\
+    &=BIIC\\
+    &=BC\\
+    &=A
+\end{align*}
+And:
+\begin{align*}
+    A^{\dagger}AA^{\dagger} &= C^T(CC^T)^{-1}(B^TB)^{-1}B^T B C C^T(CC^T)^{-1}(B^TB)^{-1}B^T\\
+    &= C^T(CC^T)^{-1} \left((B^TB)^{-1}(B^T B)\right) \left((C C^T)(CC^T)^{-1}\right) (B^TB)^{-1}B^T\\
+    &= C^T(CC^T)^{-1}(B^TB)^{-1}B^T\\
+    &= A^{\dagger}
+\end{align*}
+And 
+\begin{align*}
+    AA^{\dagger} &= BCC^T(CC^T)^{-1}(B^TB)^{-1}B^T \\
+    &= B(B^TB)^{-1}B^T\\
+    (AA^{\dagger})^T &=  B(B^TB)^{-1} (CC^T)^{-1} CC^T B^T \\
+    &= B(B^TB)^{-1} B^T 
+\end{align*}
+Therefore we have that $AA^{\dagger}$ is symmetric. Likewise we have 
+\begin{align*}
+    A^{\dagger}A &= C^T(CC^T)^{-1}(B^TB)^{-1}B^T B C\\
+     &= C^T(CC^T)^{-1} C\\
+    (A^{\dagger}A)^T = C^T B^T B (B^TB)^{-1} (CC^T)^{-1} C\\
+    &= C^T(CC^T)^{-1} C
+\end{align*}
+Therefore we have that $A^{\dagger}A$ is symmetric.
+\section{Problem 2}
+\subsection*{(a)}
+We have 
+\begin{align*}
+    A \circ (dd^T) &= \begin{bmatrix}
+        A_{11} d_1 d_1 & A_{12} d_1 d_2 & \cdots & A_{1n} d_1 d_n\\
+        A_{21} d_2 d_1 & A_{22} d_2 d_2 & \cdots & A_{2n} d_2 d_n\\
+        \vdots & \vdots & \ddots & \vdots\\
+        A_{n1} d_n d_1 & A_{n2} d_n d_2 & \cdots & A_{nn} d_n d_n\\
+    \end{bmatrix}\\
+    & = \text{diag} (d) \begin{bmatrix}
+        A_{11}d_1 & A_{12}d_2 & \cdots & A_{1n}d_n\\
+        A_{21}d_1 & A_{22}d_2 & \cdots & A_{2n}d_n\\
+        \vdots & \vdots & \ddots & \vdots\\
+        A_{n1}d_1 & A_{n2}d_2 & \cdots & A_{nn}d_n\\
+    \end{bmatrix}\\
+    &= \text{diag} (d) A \text{diag}(d)
+\end{align*}
+If we have that $A$ is positive semi definite, then we have that 
+$$A=BB^T$$
+Therefore we have that 
+$$A \circ (dd^T) = \text{diag} (d) BB^T \text{diag}(d)$$
+Let $C = \text{diag} (d) B$, then we have that
+$$A \circ (dd^T) = CC^T$$
+Therefore we have that $A \circ (dd^T)$ is positive semi definite.
+\subsection*{(b)}
+We have that 
+\begin{align*}
+    A \circ B & =\begin{bmatrix}
+        A_{11} B_{11} & A_{12} B_{12} & \cdots & A_{1n} B_{1n}\\
+        A_{21} B_{21} & A_{22} B_{22} & \cdots & A_{2n} B_{2n}\\
+        \vdots & \vdots & \ddots & \vdots\\
+        A_{n1} B_{n1} & A_{n2} B_{n2} & \cdots & A_{nn} B_{nn}\\
+    \end{bmatrix}\\
+    &= \begin{bmatrix}
+        A_{11} D_{1} D_{1}^T & A_{12} D_{1} D_{2}^T & \cdots & A_{1n} D_{1} D_{n}^T\\
+        A_{21} D_{2} D_{1}^T & A_{22} D_{2} D_{2}^T & \cdots & A_{2n} D_{2} D_{n}^T\\
+        \vdots & \vdots & \ddots & \vdots\\
+        A_{n1} D_{n} D_{1}^T & A_{n2} D_{n} D_{2}^T & \cdots & A_{nn} D_{n} D_{n}^T\\
+    \end{bmatrix}\\
+    &= \begin{bmatrix}
+        C_{1}C_{1}^T D_{1} D_{1}^T & C_{1}C_{2}^T D_{1} D_{2}^T & \cdots & C_{1}C_{n}^T D_{1} D_{n}^T\\
+        C_{2}C_{1}^T D_{2} D_{1}^T & C_{2}C_{2}^T D_{2} D_{2}^T & \cdots & C_{2}C_{n}^T D_{2} D_{n}^T\\
+        \vdots & \vdots & \ddots & \vdots\\
+        C_{n}C_{1}^T D_{n} D_{1}^T & C_{n}C_{2}^T D_{n} D_{2}^T & \cdots & C_{n}C_{n}^T D_{n} D_{n}^T\\
+    \end{bmatrix}\\
+    &=(C\circ D) (C\circ D)^T
+\end{align*}
+Where $A=CC^T$ and $B=DD^T$. And $C_{i}$ and $D_{i}$ are the $i$th row of $C$ and $D$ respectively. Therefore we have that $A \circ B$ is positive semi definite.
+\subsection*{(c)}
+We have that 
+\end{document}
