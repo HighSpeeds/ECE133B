@@ -101,4 +101,38 @@ We have that
 Where $A=CC^T$ and $B=DD^T$. And $C_{i}$ and $D_{i}$ are the $i$th row of $C$ and $D$ respectively. Therefore we have that $A \circ B$ is positive semi definite.
 \subsection*{(c)}
 We have that 
+\begin{align*}
+    v^T (A\circ B)v &= v^T =\begin{bmatrix}
+        A_{11} B_{11} & A_{12} B_{12} & \cdots & A_{1n} B_{1n}\\
+        A_{21} B_{21} & A_{22} B_{22} & \cdots & A_{2n} B_{2n}\\
+        \vdots & \vdots & \ddots & \vdots\\
+        A_{n1} B_{n1} & A_{n2} B_{n2} & \cdots & A_{nn} B_{nn}\\
+    \end{bmatrix} v \\
+    &= v^T\begin{bmatrix}
+        \sum_{j=1}^{n} A_{1j} B_{1j} v_j\\
+        \sum_{j=1}^{n} A_{2j} B_{2j} v_j\\
+        \vdots\\
+        \sum_{j=1}^{n} A_{nj} B_{nj} v_j\\
+    \end{bmatrix}\\
+    &= \sum_{i=1}^{n} \sum_{j=1}^{n} A_{ij} B_{ij} v_i v_j\\
+    &= \trace(\text{diag}(v) A \text{diag}(v) B)\\
+    &= \trace(\text{diag}(v)^2 AB)
+\end{align*}
+We have that if $v\neq0$ every element of $\text{diag}(v)^2$
+along the diagonal is positive, likewise we have that  $\trace(AB)> 0$, 
+therefore we have that $v^T (A\circ B)v >0$ for all $v\neq0$ and therefore $A\circ B$ is positive definite.
+\subsection*{(d)}
+We have that
+$$X_{2} = (X\circ X)$$
+Is positive semi definite from part $b$, therefore from induction if we assume 
+$$X_{n} = (X\circ X \circ \cdots \circ X)$$
+is positive semi definite, then we have that
+$$X_{n+1} = (X_{n}\circ X)$$
+is positive semi definite from part $b$. Therefore we have that $X_{n}$ is positive semi definite for all $n$. Therefore 
+we have that 
+$$Y = c_0 I+ \sum_{i=1}^{n} c_i X_{i}$$
+is positive semi definite since $c_i$ is nonnegative 
+for all $i$ and $X_{i}$ is positive semi definite for all $i$.
+\section*{Problem 3}
+
 \end{document}
