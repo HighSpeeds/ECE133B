@@ -134,5 +134,29 @@ $$Y = c_0 I+ \sum_{i=1}^{n} c_i X_{i}$$
 is positive semi definite since $c_i$ is nonnegative 
 for all $i$ and $X_{i}$ is positive semi definite for all $i$.
 \section*{Problem 3}
-
+\subsection*{(a)}
+We have that 
+\begin{align*}
+    A &= UU^T\\
+\end{align*}
+Therefore we have that $Q=U$ and $\Lambda=I_{m}$.
+\subsection*{(b)}
+We have that 
+\begin{align*}
+    A &= V I V^T\\
+\end{align*}
+Where $V$ is a matrix whose columns form the span of $\text{range}(U)^{\perp}$
+Therefore we have that $Q=V$ and $\Lambda=I_{n-m}$.
+\subsection*{(c)}
+We have that 
+\begin{align*}
+    A &= [U V] \begin{bmatrix}
+        -I_{m} & 0\\
+        0 & I_{n-m}
+    \end{bmatrix} [U V]^T\\
+\end{align*}
+Therefore we have that $Q=[U V]$ and $\Lambda=\begin{bmatrix}
+    -I_{m} & 0\\
+    0 & I_{n-m}
+\end{bmatrix}$, and thus the eigenvalues are $1$ and $-1$.
 \end{document}

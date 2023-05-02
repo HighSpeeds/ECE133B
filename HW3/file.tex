@@ -1,0 +1,40 @@
+\documentclass[11pt]{article}
+\author{Lawrence Liu}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,stmaryrd}
+\usepackage{physics}
+\usepackage{pdfpages}
+\newcommand{\Laplace}{\mathscr{L}}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\usepackage{xcolor}
+\usepackage{listings}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\usepackage{amssymb}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour}}
+\lstset{style=mystyle}
+\title{ECE 133B HW3}
+\begin{document}
+\maketitle
+\section*{Problem 1}
+\subsection*{(a)}
+We can write this as:
+$$\text{trace}(X^TAX)=\sum_{i=1}^k x_i^T A x_i$$
+Where $x_i$ is the $i$th column of $X$. We also have that $x_i^Tx_j = \delta_{ij}$, so we have that 
+$x_i,...,x_k$ and the eigenvector corresponding to the
+$k$th largest eigenvalues of $A$. Thus, we have that the maximum of 
+$$\text{trace}(X^TAX)\geq \sum_{i=1}^k \lambda_i$$
+Where $\lambda_i$ is the $i$th largest eigenvalue of $A$.
+\subsection*{(b)}
+From the same logic we have that $x_i,...,x_k$ are the eigenvectors corresponding to the $k$ smallest eigenvalues of $A$.
+ Thus, we have that the minimum of 
+$$\text{trace}(X^TAX)\leq \sum_{i=1}^k \lambda_{n+k+1-i}$$
+Where $\lambda_i$ is the $i$th largest eigenvalue of $A$.
+\subsection*{(c)}
+We have that 
+\begin{align*}
+    X^TAX &= X^TBB^TX\\
+    &= (B^TX)^T(B^TX)\\
+    &= 
