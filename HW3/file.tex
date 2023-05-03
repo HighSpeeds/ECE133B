@@ -33,8 +33,158 @@ From the same logic we have that $x_i,...,x_k$ are the eigenvectors correspondin
 $$\text{trace}(X^TAX)\leq \sum_{i=1}^k \lambda_{n+k+1-i}$$
 Where $\lambda_i$ is the $i$th largest eigenvalue of $A$.
 \subsection*{(c)}
+Let us start from the case where $k=1$, then we have that we want to 
+maximize $x^TAx$ subject to $x^Tx=1$. This is maximized when $x$ is the 
+eigenvalue corresponding to the largest eigenvalue of $A$, and the resulting 
+$x^TAx=\lambda_1$. Now let us extend this to the case of $k=2$, then we have that 
+$$\det(X^TAX)=\lambda_1(x_{2}^TAx_{2})-(x_{2}^TAx_{1})$$
+Therefore we can see that we can simultaneously maximize $x_{2}^TAx_{2}$
+and minimize $x_{2}^TAx_{1}$ with $x_{2}$ being the eigenvector corresponding to the second largest eigenvalue of $A$. Thus, we have that the maximum of
+$$\det(X^TAX)=\lambda_1\lambda_2$$
+Where $\lambda_1$ and $\lambda_2$ are the two largest eigenvalues of $A$. Let us 
+extend this to the case of $k$ dimensions, let us assume that we have that
+$$\det(X_{k-1}^TAX_{k-1})=\lambda_1...\lambda_{k-1}$$
+And that 
+$$X_{k-1} = \begin{bmatrix}
+v_{k-1} & v_{k-2} & ... & v_1
+\end{bmatrix}$$
+$$X_{k-1}^TAX_{k-1} = \begin{bmatrix}
+    \lambda_{k-1} & 0 & ... & 0\\
+    0 & \lambda_{k-2} & ... & 0\\
+    \vdots & \vdots & \ddots & \vdots\\
+    0 & 0 & ... & \lambda_1
+\end{bmatrix}$$
+Where $v_i$ is the eigenvector corresponding to the $i$th largest eigenvalue of $A$, $\lambda_i$. Now let us add the $k$th dimension, then we have that
+$$X_{k} = \begin{bmatrix}
+    x_{k} & v_{k-1} & v_{k-2} & ... & v_1
+\end{bmatrix}$$
+And then we will have that 
+$$X_{k}^TAX_{k} = \begin{bmatrix}
+    x_{k}^TAx_{k} & x_{k}^TAv_{k-1} &... & x_{k}^TAv_1\\
+    x_{k}^TAv_{k-1} & \lambda_{k-1} & ... & 0\\
+    \vdots & \vdots & \ddots & \vdots\\
+    x_{k}^TAv_1 & 0 & ... & \lambda_1
+\end{bmatrix}$$
+Therefore from the Lebiniz formula we have that 
+$$\det(X_{k}^TAX_{k})=\left(x_{k}^TAx_{k}-\sum_{i=1}^{k-1}x_{k}^TAv_i\right)
+\prod_{i=1}^{k-1}\lambda_i$$
+Therefore we can see that we need to maximize $x_{k}^TAx_{k}-\sum_{i=1}^{k-1}x_{k}^TAv_i$, which 
+we can do by setting $x_{k}$ to be the eigenvector corresponding to the $k$th largest eigenvalue of $A$. Thus, we have that
+$$\det(X_{k}^TAX_{k})=\lambda_1...\lambda_{k}$$
+And thus we get that the maximum of $\det(X^TAX)$ is $\prod_{i=1}^{k}\lambda_i$
+with the maximum being achieved when the columns of $X$ are the eigenvectors corresponding to the $k$ largest eigenvalues of $A$.
+\subsection*{(d)}
 We have that 
 \begin{align*}
-    X^TAX &= X^TBB^TX\\
-    &= (B^TX)^T(B^TX)\\
-    &= 
+    ||X^TAX||_F &= \sqrt{\text{trace}\left((X^TAX)(X^TAX)^T\right)}\\
+    &= \sqrt{\text{trace}\left((X^TAX)^2\right)}\\
+    &= \sqrt{\text{trace}(X^TAX)^2-2\sum_{i<j}\lambda'_i\lambda'_j}\\
+    &=\sqrt{\sum_{i=1}^k\lambda_i^2}\\
+\end{align*}
+Where $\lambda'_i$ is the $i$th eigenvalue of $X^TAX$, since the 
+eigenvalues of $X^TAX$ are the same as the eigenvalues of $A$, we have that this is maximized when 
+the columns of $X$ are the eigenvectors corresponding to the $k$ largest eigenvalues of $A$. And the resulting 
+value of $||X^TAX||_F$ is $\sqrt{\sum_{i=1}^k\lambda_i^2}$.
+\section*{Problem 2}
+\subsection*{(a)}
+We have that 
+\begin{align*}
+    ||A-tI||_F = \sqrt{\text{trace}\left((A-tI)(A-tI)^T\right)}\\
+    =\sqrt{\text{trace}(A^2-2tA+t^2I)}\\
+    =\sqrt{\text{trace}(A^2)-2t\text{trace}(A)+t^2\text{trace}(I)}\\
+    =\sqrt{\sum_{i=1}^n\lambda_i^2-2t\sum_{i=1}^n\lambda_i+nt^2}
+\end{align*}
+To maximize we take the derivative with respect to $t$ and set it to zero
+\begin{align*}
+    \frac{\partial}{\partial t}||A-tI||_F &= \frac{1}{2||A-tI||_F}\left(-2\sum_{i=1}^n\lambda_i+2nt\right)\\
+    0 &= \frac{1}{2||A-tI||_F}\left(-2\sum_{i=1}^n\lambda_i+2nt\right)\\
+    t &= \boxed{\frac{1}{n}\sum_{i=1}^n\lambda_i}
+\end{align*}
+In doing so we ignored the trivial case where $||A-tI||_F=0$, since this would imply that $A=tI$ and thus $A$ would be $A=aI$ for some $a$ and thus $t=a$. 
+\subsection*{(b)}
+We have that the eigenvalues of $A-tI$ are $\lambda_i-t$ for $i=1,...,n$. Therefore we have that
+$$||A-tI||_2 = \max_{i=1,...,n}|\lambda_i-t|$$
+Therefore we have to minimize this, therefore we have that 
+$t = \boxed{\frac{\lambda_i+\lambda_n}{2}}$ where $\lambda_n$ is the smallest eigenvalue of $A$ and 
+$\lambda_i$ is the largest eigenvalue of $A$.
+\section*{Problem 3}
+We have that from Courant-Fischer
+$$\lambda_{max}(A+B) = \max\left\{\frac{x^T(A+B)x}{x^Tx}:x\neq 0\right\}$$
+We have that 
+$$\max\left\{\frac{x^T(A+B)x}{x^Tx}:x\neq 0\right\} \leq \max\left\{\frac{x^TAx}{x^Tx}:x\neq 0\right\}+\max\left\{\frac{x^TBx}{x^Tx}:x\neq 0\right\}$$
+$$\lambda_{max}(A+B) \leq \lambda_{max}(A)+\lambda_{max}(B)$$
+And 
+$$\max\left\{\frac{x^T(A+B)x}{x^Tx}:x\neq 0\right\} \geq \max\left\{\frac{x^TAx}{x^Tx}:x\neq 0\right\}+\min\left\{\frac{x^TBx}{x^Tx}:x\neq 0\right\}$$
+$$\lambda_{max}(A+B) \geq \lambda_{max}(A)+\lambda_{min}(B)$$
+Therefore we have 
+$$\lambda_{max}(A)+\lambda_{min}(B)\leq \lambda_{max}(A+B) \leq \lambda_{max}(A)+\lambda_{max}(B)$$
+\section*{Problem 4}
+\subsection*{(a)}
+We have that:
+\begin{align*}
+    B &= \begin{bmatrix}
+        U & 0\\
+        0 & V
+    \end{bmatrix}
+    \begin{bmatrix}
+        0 & \Sigma\\
+        \Sigma^T & 0
+    \end{bmatrix}\begin{bmatrix}
+        U^T & 0\\
+        0 & V^T
+    \end{bmatrix}\\
+    &= \begin{bmatrix}
+        U & 0\\
+        0 & V
+    \end{bmatrix}
+    \begin{bmatrix}
+        0 & \Sigma V^T\\
+        \Sigma^TU^T & 0
+    \end{bmatrix}\\
+    &= \begin{bmatrix}
+        0 & U\Sigma V^T\\
+        V\Sigma^TU^T & 0
+    \end{bmatrix}\\
+    &= \begin{bmatrix}
+        0 & A\\
+        A^T & 0
+    \end{bmatrix}
+\end{align*}
+\subsection*{(b)}
+We have that 
+\begin{align*}
+    B^TB &= \begin{bmatrix}
+        U & 0\\
+        0 & V
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Sigma\Sigma^T & 0\\
+        0 & \Sigma^T\Sigma
+    \end{bmatrix}\begin{bmatrix}
+        U^T & 0\\
+        0 & V^T
+    \end{bmatrix}\\
+    &=\begin{bmatrix}
+        U & 0\\
+        0 & V
+    \end{bmatrix}
+    \text{diag}(\sigma_1^2, \sigma_2^2,...,\sigma_n^2,0,...,0,
+    \sigma_1^2, \sigma_2^2,...,\sigma_n^2)\begin{bmatrix}
+        U^T & 0\\
+        0 & V^T
+    \end{bmatrix}
+\end{align*}
+Therefore we have that the eigendecomposition of $B$ is
+$$B = \begin{bmatrix}
+    U & 0\\
+    0 & V
+\end{bmatrix}
+\text{diag}(\sigma_1, \sigma_2,...,\sigma_n,0,...,0,
+-\sigma_1, -\sigma_2,...,-\sigma_n)
+\begin{bmatrix}
+    U^T & 0\\
+    0 & V^T
+\end{bmatrix}$$
+\subsection*{(c)}
+The eigenvalues are $\sigma_1, \sigma_2,...,\sigma_n$ and $-\sigma_1, -\sigma_2,...,-\sigma_n$.  
+\end{document}

@@ -1,8 +1,8 @@
-PWD c:/Users/Lawrence/Desktop/UCLA/ECE133B/HW2
+PWD c:/Users/Lawrence/Desktop/UCLA/ECE133B/HW3
 INPUT c:/texlive/2022/texmf.cnf
 INPUT c:/texlive/2022/texmf-dist/web2c/texmf.cnf
 INPUT c:/texlive/2022/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT c:/Users/Lawrence/Desktop/UCLA/ECE133B/HW2/file.tex
+INPUT c:/Users/Lawrence/Desktop/UCLA/ECE133B/HW3/file.tex
 OUTPUT file.log
 INPUT c:/texlive/2022/texmf-dist/tex/latex/base/article.cls
 INPUT c:/texlive/2022/texmf-dist/tex/latex/base/article.cls
@@ -430,6 +430,7 @@ INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/stmaryrd/stmary8.tfm
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/stmaryrd/stmary6.tfm
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
+INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmex10.tfm
@@ -438,7 +439,6 @@ INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/stmaryrd/stmary10.tfm
 OUTPUT file.pdf
 INPUT c:/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map
-INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT file.aux
 INPUT c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 INPUT c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
