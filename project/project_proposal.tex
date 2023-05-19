@@ -1,0 +1,54 @@
+\documentclass[10pt]{article}
+\author{Lawrence Liu}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,stmaryrd}
+\usepackage{physics}
+\usepackage{pdfpages}
+\newcommand{\Laplace}{\mathscr{L}}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\usepackage{xcolor}
+\usepackage{listings}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\usepackage{amssymb}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour}}
+\lstset{style=mystyle}
+\title{ECE 133B Project Proposal}
+\begin{document}
+\maketitle
+Our Project Proposal is using Singular Value Decomposition (SVD) and Kernel 
+Density Estimation to optimizing portfolio allocation. Our goal will be to deliver a 
+annualized sharpe ratio that is higher than the S\&P500, and the optimal portfolio given by 
+Markowitz's Mean-Variance Portfolio Optimization. We will use the S\&P500 dataset
+over the past 10 years as the dataset.\\\\
+Our approach will be the following, we will use SVD to identify individual sectors of the 
+dataset that are correlated. Then we will use Kernel Density Estimation to estimate the 
+multivariate probability density function of the returns of each sector and thus get a more accurate for the first and second moments of the 
+distribution. Ie  we have that the probability density function 
+that the return for each sector $r_1, r_2, \dots, r_n$ is given by
+$$
+f(r_1, r_2, \dots, r_n) = \frac{1}{m}\sum_{i=1}^m k(r_i')
+$$
+where $k$ is the kernel function and $r_i'$ is the vector representing the 
+return of the $n$ sectors (so a vector of size $n$) for the $i$th observation 
+in our trainset of $m$ observations.\\\\
+We use Kernel Density Estimation to 
+estimate the probability density function of the returns of each sector because they will likely not be 
+normally distributed as Markowitz's Mean-Variance Portfolio Optimization assumes. Specifically we will investigate using 
+two kernels, a Gaussian Kernel and a Multivariate T Kernel, to estimate the probability density function of the returns of each sector. To optimize
+the parameters of the kernels we will use cross validation and gradient descent, for paremeters that are a matrices such as the 
+$\Sigma$ for a Gaussian Kerenel we will first decompose it with Cholesky Decomposition and then optimize the parameters of the
+decomposed matrix.
+\end{document}
+
+% We will investigate two kernels, 
+% a Gaussian Kernel and a Multivariate T Kernel, 
+
+% outperform 
+% the S\&P500, and the optimal portfolio given by Markowitz's Mean-Variance
+
+% We will use the S&P500 dataset 
+% over the past 10 years as the dataset. Then we will use Singular Value Decomposition (SVD)
+% to identify sectors of the dataset that are correlated. 
