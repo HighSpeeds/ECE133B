@@ -18,4 +18,7 @@ for data_path in data_paths:
         all_df = df
     else:
         all_df = pd.merge(all_df,df,on="date",how="outer")
+
+#sort by date
+all_df = all_df.sort_values(by="date")
 all_df.to_csv("data.csv",index=False)

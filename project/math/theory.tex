@@ -1,0 +1,108 @@
+\documentclass[12pt]{article}
+\author{Lawrence Liu}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{pdfpages}
+\newcommand{\Laplace}{\mathscr{L}}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\usepackage{xcolor}
+\usepackage{listings}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\usepackage{amssymb}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour}}
+\lstset{style=mystyle}
+
+\begin{document}
+We have that the estimated density from the kernel density estimator is given by
+\begin{equation}
+\hat{f}_{\theta}(x) = \frac{1}{n} \sum_{i=1}^n K_{\theta}(x-x_i')
+\end{equation}
+where $K_h$ is the kernel function, and $\theta$ are the parameters, and $x_i'$ is the $i$th training point. 
+In our case $x_i'$ is a $m$ dimensional vector representing the daily change for each of the $m$ stocks in our dataset.
+We assume that that each kernel function is normalized $\int_{\mathbb{R}^d} K_h(x) dx = 1$
+\section*{Optimizing the Kernel Parameters}
+We would want to minimize the weighted log likelihood function, ie we would want to minimize:
+\begin{equation}
+    \mathcal{L}(x_1',\dots,x_k') = -\sum_{i=1}^k w_i\log \hat{f}_h(x_i')
+\end{equation}
+Where are $w_i$ are weights of the $i$th training point, we will experiments with different weighting mechanisms later on.
+\subsection*{Gaussian Kernel}
+Let us consider the case of a gaussian kernel 
+
+. We assume 
+in our  case that the kernel is scaled such that $\int_{\mathbb{R}^d} K_h(x) dx = 1$. What we want to optimize is the sharpe 
+ratio, which is given by: 
+\begin{equation}
+    \frac{\mathbb{E}[R_p]}{\sigma_p}
+\end{equation}
+If we have that the weights for each of the $10$ stocks is given by a vector $w$, then we can write the expected return as:
+\begin{equation}
+    \mathbb{E}[R_p] = \mathbb{E}[w^T x]
+\end{equation}
+Where $x$ is the vector of daily returns for each of the $10$ stocks. We have that this is given by:
+\begin{align}
+    \mathbb{E}[w^T x] &= \int_{\mathbb{R}^{10}} w^T x \hat{f}_h(x) dx \\
+    &= \frac{1}{n} \sum_{i=1}^n\int_{\mathbb{R}^{10}} w^T xK_h(x-x_i') dx
+\end{align}
+Now we can use the fact that the kernel function is symmetric to get:
+\begin{align*}
+    \int_{\mathbb{R}^{10}} xK_h(x-x_i') dx & = \int_{\mathbb{R}^{10}} (x_i-u)K_h(u) du 
+\end{align*}
+Where $u=x-x_i'$, because $K_h(u)$ is symmetric (even) about $u=0$. we have that $\int_{\mathbb{R}^{10}}uK_h(u) du = 0$, thus we have that 
+\begin{align}
+    \int_{\mathbb{R}^{10}} xK_h(x-x_i') dx & = \int_{\mathbb{R}^{10}}x_iK_h(u) du \\
+    &= x_i
+\end{align}
+Therefore we have that:
+\begin{align}
+    \mathbb{E}[w^T x] &= \frac{1}{n} \sum_{i=1}^nw^T x_i'
+    \label{eq:expectedreturn}
+\end{align}
+Now we need to find the variance of the portfolio, which is given by:
+\begin{align}
+    \sigma_p^2 & = \mathbb{E}[(w^T x)^2] - \mathbb{E}[w^T x]^2
+    \label{eq:variance}
+\end{align}
+From equation (\ref{eq:expectedreturn}) we have that, $\mathbb{E}[w^T x]^2=\left(\frac{1}{n} \sum_{i=1}^nw^T x_i'\right)^2$.
+We have that $\mathbb{E}[(w^T x)^2]$ is given by:
+\begin{align}
+    \mathbb{E}[(w^T x)^2] &= \int_{\mathbb{R}^{10}} (w^T x)^2 \hat{f}_h(x) dx \\
+    &= \frac{1}{n} \sum_{i=1}^n\int_{\mathbb{R}^{10}} (w^T x)^2 K_h(x-x_i') dx
+\end{align}
+We have that because $w^Tx$ is a scalar, we have that $(w^Tx)^T=x^Tw=w^Tx$, therefore we have that:
+\begin{align}
+    \mathbb{E}[(w^T x)^2] &= \frac{1}{n} \sum_{i=1}^n\int_{\mathbb{R}^{10}} w^Txx^Tw K_h(x-x_i') dx \\
+    &= \frac{1}{n} \sum_{i=1}^nw^T\left(\int_{\mathbb{R}^{10}} xx^T K_h(x-x_i') dx\right)w\\
+    &= w^T\left(\frac{1}{n}\sum_{i=1}^n\int_{\mathbb{R}^{10}} xx^T K_h(x-x_i') dx\right)w
+    \label{eq:variance2}
+\end{align}
+Now let us limit our consideration to a gaussian kernel, ie
+\begin{equation}
+    K_h(x-x_i') = \frac{1}{(2\pi)^{d/2}h} \exp\left(-\frac{1}{2} \frac{(x-x_i')^T(x-x_i')}{h^2}\right)
+\end{equation}
+We can see that this is equivalent to a multivariate gaussian with $\mu=x_i'$ and $\Sigma=\frac{1}{h^2}I$. Therefore we have that $\int_{\mathbb{R}^{10}} xx^T K_h(x-x_i')$
+is effectively the second moment of this multivariate gaussian, which is given by:
+\begin{equation}
+    \int_{\mathbb{R}^{10}} xx^T K_h(x-x_i') dx = x_ix_i^T + \frac{1}{h^2}I
+\end{equation}
+Therefore we have that 
+equation (\ref{eq:variance2}) becomes
+\begin{align}
+    \mathbb{E}[(w^T x)^2]
+    &= w^T\left(\frac{1}{n}\sum_{i=1}^nx_ix_i^T + \frac{1}{h^2}I\right)w\\
+    &=  w^T\left(\frac{1}{h^2}I+\frac{1}{n}\sum_{i=1}^nx_ix_i^T\right)w\\
+    &=  \frac{1}{h^2}w^Tw + w^T\left(\frac{1}{n}\sum_{i=1}^nx_ix_i^T\right)w
+\end{align}
+Therefore we have that equation (\ref{eq:variance}) becomes:
+\begin{equation}
+    \sigma_p^2 =\frac{1}{h^2}w^Tw + w^T\left(\frac{1}{n}\sum_{i=1}^nx_ix_i^T\right)w-\left(\frac{1}{n} \sum_{i=1}^nw^T x_i'\right)^2
+\end{equation}
+And thus the sharpe ratio is given by:
+\begin{equation}
+    \frac{\mathbb{E}[R_p]}{\sigma_p} = \frac{\frac{1}{n} \sum_{i=1}^nw^T x_i'}{\sqrt{\frac{1}{h^2}w^Tw + w^T\left(\frac{1}{n}\sum_{i=1}^nx_ix_i^T\right)w-\left(\frac{1}{n} \sum_{i=1}^nw^T x_i'\right)^2}}
+\end{equation}
+Maximizing this is a fractional programming problem, which can  be solved with known algorithms.
+\end{document}
