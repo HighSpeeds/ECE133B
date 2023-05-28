@@ -26,12 +26,26 @@ We assume that that each kernel function is normalized $\int_{\mathbb{R}^d} K_h(
 \section*{Optimizing the Kernel Parameters}
 We would want to minimize the weighted log likelihood function, ie we would want to minimize:
 \begin{equation}
-    \mathcal{L}(x_1',\dots,x_k') = -\sum_{i=1}^k w_i\log \hat{f}_h(x_i')
+    \mathcal{L}(x_1',\dots,x_k') = -\sum_{i=1}^k w_i\log(\hat{f}_{\theta}(x_i'))
 \end{equation}
 Where are $w_i$ are weights of the $i$th training point, we will experiments with different weighting mechanisms later on.
 \subsection*{Gaussian Kernel}
 Let us consider the case of a gaussian kernel 
-
+$$K_{\Sigma}(x) = \frac{1}{\sqrt{(2\pi)^d|\Sigma|}}\exp\left(-\frac{1}{2}x^T\Sigma^{-1}x\right)$$
+Where $\Sigma$ is the covariance matrix for the kernel. Because the 
+covariance matrix is symmetric positive semidefinite 
+we can express $\Sigma$ as $\Sigma = LL^T$ where $L$ is a lower triangular matrix.
+We have that the derivative of the 
+weighted log likelihood function is given by:
+\begin{align*}
+    \frac{\partial}{\partial L^T}\mathcal{L}(x_1',\dots,x_k') &= -\sum_{i=1}^k w_i \frac{1}{\hat{f}_{\theta}(x_i')} \frac{\partial \hat{f}_{\theta}(x_i')}{\partial L^T}
+\end{align*}
+We have that 
+\begin{align*}
+    \frac{\partial |\Sigma|}{\partial L^T} &= \frac{\partial |LL^T|}{\partial L^T} \\
+    &= 2|\Sigma|L^{-1}
+\end{align*}
+We also have that:
 . We assume 
 in our  case that the kernel is scaled such that $\int_{\mathbb{R}^d} K_h(x) dx = 1$. What we want to optimize is the sharpe 
 ratio, which is given by: 
