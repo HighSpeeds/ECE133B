@@ -1,10 +1,13 @@
-\documentclass[12pt]{article}
+\documentclass[10pt]{article}
+\usepackage{geometry}
+\geometry{a4paper, portrait, margin=1in}
 \author{Lawrence Liu}
 \usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{pdfpages}
 \newcommand{\Laplace}{\mathscr{L}}
+\DeclareMathOperator{\Tr}{tr}
 \setlength{\parskip}{\baselineskip}%
 \setlength{\parindent}{0pt}%
 \usepackage{xcolor}
@@ -34,89 +37,74 @@ Let us consider the case of a gaussian kernel
 $$K_{\Sigma}(x) = \frac{1}{\sqrt{(2\pi)^d|\Sigma|}}\exp\left(-\frac{1}{2}x^T\Sigma^{-1}x\right)$$
 Where $\Sigma$ is the covariance matrix for the kernel. Because the 
 covariance matrix is symmetric positive semidefinite 
-we can express $\Sigma$ as $\Sigma = LL^T$ where $L$ is a lower triangular matrix.
+we can express $\Sigma$ as $\Sigma = R^TR$ through Cholesky decomposition.
 We have that the derivative of the 
 weighted log likelihood function is given by:
 \begin{align*}
-    \frac{\partial}{\partial L^T}\mathcal{L}(x_1',\dots,x_k') &= -\sum_{i=1}^k w_i \frac{1}{\hat{f}_{\theta}(x_i')} \frac{\partial \hat{f}_{\theta}(x_i')}{\partial L^T}
+    \frac{\partial}{\partial R}\mathcal{L}(x_1',\dots,x_k') &= -\sum_{i=1}^k w_i \frac{1}{\hat{f}_{\theta}(x_i')} \frac{\partial \hat{f}_{\theta}(x_i')}{\partial R}
 \end{align*}
 We have that 
 \begin{align*}
-    \frac{\partial |\Sigma|}{\partial L^T} &= \frac{\partial |LL^T|}{\partial L^T} \\
-    &= 2|\Sigma|L^{-1}
+    \frac{\partial |\Sigma|}{\partial R} &= \frac{\partial |R^TR|}{\partial R} \\
+    &= 2|\Sigma|R^{-T}
 \end{align*}
-We also have that:
-. We assume 
-in our  case that the kernel is scaled such that $\int_{\mathbb{R}^d} K_h(x) dx = 1$. What we want to optimize is the sharpe 
-ratio, which is given by: 
-\begin{equation}
-    \frac{\mathbb{E}[R_p]}{\sigma_p}
-\end{equation}
-If we have that the weights for each of the $10$ stocks is given by a vector $w$, then we can write the expected return as:
-\begin{equation}
-    \mathbb{E}[R_p] = \mathbb{E}[w^T x]
-\end{equation}
-Where $x$ is the vector of daily returns for each of the $10$ stocks. We have that this is given by:
-\begin{align}
-    \mathbb{E}[w^T x] &= \int_{\mathbb{R}^{10}} w^T x \hat{f}_h(x) dx \\
-    &= \frac{1}{n} \sum_{i=1}^n\int_{\mathbb{R}^{10}} w^T xK_h(x-x_i') dx
-\end{align}
-Now we can use the fact that the kernel function is symmetric to get:
-\begin{align*}
-    \int_{\mathbb{R}^{10}} xK_h(x-x_i') dx & = \int_{\mathbb{R}^{10}} (x_i-u)K_h(u) du 
-\end{align*}
-Where $u=x-x_i'$, because $K_h(u)$ is symmetric (even) about $u=0$. we have that $\int_{\mathbb{R}^{10}}uK_h(u) du = 0$, thus we have that 
-\begin{align}
-    \int_{\mathbb{R}^{10}} xK_h(x-x_i') dx & = \int_{\mathbb{R}^{10}}x_iK_h(u) du \\
-    &= x_i
-\end{align}
-Therefore we have that:
-\begin{align}
-    \mathbb{E}[w^T x] &= \frac{1}{n} \sum_{i=1}^nw^T x_i'
-    \label{eq:expectedreturn}
-\end{align}
-Now we need to find the variance of the portfolio, which is given by:
-\begin{align}
-    \sigma_p^2 & = \mathbb{E}[(w^T x)^2] - \mathbb{E}[w^T x]^2
-    \label{eq:variance}
-\end{align}
-From equation (\ref{eq:expectedreturn}) we have that, $\mathbb{E}[w^T x]^2=\left(\frac{1}{n} \sum_{i=1}^nw^T x_i'\right)^2$.
-We have that $\mathbb{E}[(w^T x)^2]$ is given by:
-\begin{align}
-    \mathbb{E}[(w^T x)^2] &= \int_{\mathbb{R}^{10}} (w^T x)^2 \hat{f}_h(x) dx \\
-    &= \frac{1}{n} \sum_{i=1}^n\int_{\mathbb{R}^{10}} (w^T x)^2 K_h(x-x_i') dx
-\end{align}
-We have that because $w^Tx$ is a scalar, we have that $(w^Tx)^T=x^Tw=w^Tx$, therefore we have that:
-\begin{align}
-    \mathbb{E}[(w^T x)^2] &= \frac{1}{n} \sum_{i=1}^n\int_{\mathbb{R}^{10}} w^Txx^Tw K_h(x-x_i') dx \\
-    &= \frac{1}{n} \sum_{i=1}^nw^T\left(\int_{\mathbb{R}^{10}} xx^T K_h(x-x_i') dx\right)w\\
-    &= w^T\left(\frac{1}{n}\sum_{i=1}^n\int_{\mathbb{R}^{10}} xx^T K_h(x-x_i') dx\right)w
-    \label{eq:variance2}
-\end{align}
-Now let us limit our consideration to a gaussian kernel, ie
-\begin{equation}
-    K_h(x-x_i') = \frac{1}{(2\pi)^{d/2}h} \exp\left(-\frac{1}{2} \frac{(x-x_i')^T(x-x_i')}{h^2}\right)
-\end{equation}
-We can see that this is equivalent to a multivariate gaussian with $\mu=x_i'$ and $\Sigma=\frac{1}{h^2}I$. Therefore we have that $\int_{\mathbb{R}^{10}} xx^T K_h(x-x_i')$
-is effectively the second moment of this multivariate gaussian, which is given by:
-\begin{equation}
-    \int_{\mathbb{R}^{10}} xx^T K_h(x-x_i') dx = x_ix_i^T + \frac{1}{h^2}I
-\end{equation}
 Therefore we have that 
-equation (\ref{eq:variance2}) becomes
-\begin{align}
-    \mathbb{E}[(w^T x)^2]
-    &= w^T\left(\frac{1}{n}\sum_{i=1}^nx_ix_i^T + \frac{1}{h^2}I\right)w\\
-    &=  w^T\left(\frac{1}{h^2}I+\frac{1}{n}\sum_{i=1}^nx_ix_i^T\right)w\\
-    &=  \frac{1}{h^2}w^Tw + w^T\left(\frac{1}{n}\sum_{i=1}^nx_ix_i^T\right)w
-\end{align}
-Therefore we have that equation (\ref{eq:variance}) becomes:
 \begin{equation}
-    \sigma_p^2 =\frac{1}{h^2}w^Tw + w^T\left(\frac{1}{n}\sum_{i=1}^nx_ix_i^T\right)w-\left(\frac{1}{n} \sum_{i=1}^nw^T x_i'\right)^2
+    \frac{\partial}{\partial R}\frac{1}{\sqrt{(2\pi)^d|\Sigma|}} = -R^{-T}\frac{1}{\sqrt{(2\pi)^d|\Sigma|}}
 \end{equation}
-And thus the sharpe ratio is given by:
+%     \frac{\partial}{\partial R}\frac{1}{\sqrt{(2\pi)^d|\Sigma|}} &= -R^{-T}\frac{1}{\sqrt{(2\pi)^d}}
+% \end{align*}
+We also have that:
 \begin{equation}
-    \frac{\mathbb{E}[R_p]}{\sigma_p} = \frac{\frac{1}{n} \sum_{i=1}^nw^T x_i'}{\sqrt{\frac{1}{h^2}w^Tw + w^T\left(\frac{1}{n}\sum_{i=1}^nx_ix_i^T\right)w-\left(\frac{1}{n} \sum_{i=1}^nw^T x_i'\right)^2}}
+    \frac{\partial}{\partial R} e^{\frac{1}{2}x^T\Sigma^{-1}x} = \frac{1}{2}e^{\frac{1}{2}x^T\Sigma^{-1}x} \frac{\partial}{\partial R} x^T(R^{-1}R^{-T})x
 \end{equation}
-Maximizing this is a fractional programming problem, which can  be solved with known algorithms.
+$\frac{\partial}{\partial R} x^T(R^{-1}R^{-T})x$ is very difficult to calculate, so we must approximate it. First we note that for 
+a function $f(\mathbf{x})$ that takes in a vector $\mathbf{x}$ we have that the first order taylor expansion is given by:
+\begin{equation}
+    f(\mathbf{x}+\Delta \mathbf{x}) \approx f(\mathbf{x}) + \frac{\partial f(\mathbf{x})}{\partial \mathbf{x}}\Delta \mathbf{x}
+\end{equation}
+Where $\frac{\partial f(\mathbf{x})}{\partial \mathbf{x}}$ is a $1\times d$ vector, if $\mathbf{x}$ is a $d$ dimensional vector. Therefore 
+we argue that a generalization to a function of a matrix $\mathbf{X}$ is given by:
+\begin{equation}
+    f(\mathbf{X}+\Delta \mathbf{X}) \approx f(\mathbf{X}) + \mathbf{1}^T\left(\frac{\partial f(\mathbf{X})}{\partial \mathbf{X}}\circ \Delta \mathbf{X}\right)\mathbf{1}
+\end{equation}
+Where $\circ$ is the Hadamard product, and $\mathbf{1}$ is a $d\times 1$ vector of ones. We note that $\mathbf{1}^T\left(\frac{\partial f(\mathbf{X})}{\partial \mathbf{X}}\circ \Delta \mathbf{X}\right)\mathbf{1}$
+equals to $\Tr\left(\left(\frac{\partial f(\mathbf{X})}{\partial \mathbf{X}}\right)^T\mathbf{X}\right)$. We have for our specific case:
+\begin{align*}
+    x^T((R+\delta R)^{-1}(R+\delta R)^{-T})x &\approx x^T(R^{-1}R^{-T})x + \Tr\left(\left(\frac{\partial(x^TR^{-1}R^{-T})x}{\partial R}\right)^T  \delta R\right)
+\end{align*}
+We note that for small pertubations, $(R+\delta R)^{-1} \approx R^{-1} - R^{-1}\delta R R^{-1}$, and therefore:
+\begin{align*}
+    x^T (R^{-1} - R^{-1}\delta R R^{-1})(R^{-T} - R^{-T}\delta R^T R^{-T})x &\approx x^T(R^{-1}R^{-T})x + \Tr\left(\left(\frac{\partial(x^TR^{-1}R^{-T})x}{\partial R}\right)^T  \delta R\right)
+\end{align*}
+Only keeping the zeroth order and first order terms, we have that:
+\begin{align*}
+    x^T(R^{-1}R^{-T})x - x^T \left(R^{-1}\delta R R^{-1}R^{-T} + R^{-1}R^{-T}\delta R^T R^{-T}\right)x \approx& x^T(R^{-1}R^{-T})x \\&+ \Tr\left(\left(\frac{\partial(x^TR^{-1}R^{-T})x}{\partial R}\right)^T  \delta R\right)\\
+\end{align*}
+\begin{equation}
+    - x^T \left(R^{-1}\delta R R^{-1}R^{-T} + R^{-1}R^{-T}\delta R^T R^{-T}\right)x \approx \Tr\left(\left(\frac{\partial(x^TR^{-1}R^{-T})x}{\partial R}\right)^T  \delta R\right)\\
+\end{equation}
+Because the left side is a scalar, we can apply an trace operator to both sides, and noting that $R^{-1}R^{-T}=\Sigma^{-1}$, we have that:
+\begin{align*}
+    -\Tr\left(x^T \left(R^{-1}\delta R \Sigma^{-1} + \Sigma^{-1}\delta R^T R^{-T}\right)x\right) &\approx \Tr\left(\left(\frac{\partial(x^TR^{-1}R^{-T})x}{\partial R}\right)^T  \delta R\right)\\
+    -\Tr\left(x^T R^{-1}\delta R \Sigma^{-1}x\right) -\Tr\left( x^T\Sigma^{-1}\delta R^T R^{-T}x\right)&\approx\\
+    -\Tr\left(x^T R^{-1}\delta R \Sigma^{-1}x\right)-\Tr\left( x^TR^{-1}\delta R \Sigma^{-T} x\right)&\approx\\
+    -2\Tr\left(x^T R^{-1}\delta R \Sigma^{-1}x\right) &\approx\\
+    -2\Tr\left( \Sigma^{-1}xx^T R^{-1}\delta R\right) &\approx \Tr\left(\left(\frac{\partial(x^TR^{-1}R^{-T})x}{\partial R}\right)^T  \delta R\right)
+\end{align*}
+Therefore we can see that 
+\begin{equation}
+    \frac{\partial}{\partial R} x^T(R^{-1}R^{-T})x \approx -2\Sigma^{-1}xx^T R^{-1}
+\end{equation}
+Therefore we have that:
+\begin{equation}
+    \frac{\partial}{\partial R} e^{\frac{1}{2}x^T\Sigma^{-1}x} \approx -e^{\frac{1}{2}x^T\Sigma^{-1}x} \Sigma^{-1}xx^T R^{-1}
+\end{equation}
+Therefore we have that
+\begin{equation*}
+    \frac{\partial}{\partial R} K_{\Sigma}(x) = -K_{\Sigma}(x)R^{-T} - K_{\Sigma}(x)\Sigma^{-1}xx^T R^{-1}
+\end{equation*} 
+
+
+
 \end{document}
