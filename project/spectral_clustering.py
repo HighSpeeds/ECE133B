@@ -28,7 +28,7 @@ plt.sca(axs[0])
 plt.imshow(correlation_train)
 plt.title("Unclustered")
 
-clustering = skc.SpectralClustering(n_clusters=30,affinity='nearest_neighbors')
+clustering = skc.SpectralClustering(n_clusters=35,affinity='nearest_neighbors')
 clustering.fit(-correlation_train)
 print(clustering.labels_)
 for i in range(len(np.unique(clustering.labels_))):
