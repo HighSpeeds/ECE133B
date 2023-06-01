@@ -26,7 +26,8 @@ w = optimize_portfolio(mu_train,cov_train)
 print(w)
 print("train sharpe ratio: ", mu_train.T@w/np.sqrt(w.T@cov_train@w)*np.sqrt(252))
 print("test sharpe ratio: ", mu_test.T@w/np.sqrt(w.T@cov_test@w)*np.sqrt(252))
-
+#save w
+np.save('weights/naive.npy',w)
 import matplotlib.pyplot as plt
 plt.plot(np.cumprod(1+changes@w))
 plt.axvline(x=int(changes.shape[0]*0.8),color='r')

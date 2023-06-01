@@ -8,18 +8,19 @@ sp500_df.set_index('date', inplace=True)
 sp500_df = sp500_df.pct_change()
 sp500_df.dropna(inplace=True)
 changes = sp500_df.values
-pca = skd.PCA(n_components=10)
+pca = skd.PCA(n_components=100)
 pca.fit(changes)
 print(pca.explained_variance_ratio_)
-print(pca.singular_values_)
-#for each component, print the top 5 stocks
-for i in range(10):
-    print('Component', i)
-    #argsort returns the indices that would sort the array
-    #[-5:] gets the last 5 indices
-    #[::-1] reverses the array
-    #the result is the indices of the top 5 stocks
-    top5 = np.argsort(np.abs(pca.components_[i]))[-5:][::-1]
-    print(sp500_df.columns[top5])
-    print(pca.components_[i][top5])
-    print()
+#get the number of components that explain 90% of the variance
+n_components = 0
+variance = 0
+for i in range(len(pca.explained_variance_ratio_)):
+    variance += pca.explained_variance_ratio_[i]
+    n_components += 1
+    if variance >= 0.9:
+        break
+#get the sharpe ratio of each component
+sharpe_ratios = []
+for i in range(n_components):
+    sharpe_ratios.append(np.mean(pca.components_[i,:])/np.std(pca.components_[i,:]))
+print(sharpe_ratios)
