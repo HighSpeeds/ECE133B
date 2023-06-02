@@ -24,8 +24,11 @@ mu_test = np.mean(test,axis=0)
 
 w = optimize_portfolio(mu_train,cov_train)
 print(w)
-print("train sharpe ratio: ", mu_train.T@w/np.sqrt(w.T@cov_train@w)*np.sqrt(252))
-print("test sharpe ratio: ", mu_test.T@w/np.sqrt(w.T@cov_test@w)*np.sqrt(252))
+train_changes = train @ w
+test_changes = test @ w
+
+print("train sharpe ratio: ", np.mean(train_changes)/np.std(train_changes)*np.sqrt(252))
+print("test sharpe ratio: ", np.mean(test_changes)/np.std(test_changes)*np.sqrt(252))
 #save w
 np.save('weights/naive.npy',w)
 import matplotlib.pyplot as plt
