@@ -17,4 +17,9 @@ class kernel:
         for key, value in params.items():
             setattr(self, key, value)
 
+    def get_params(self):
+        """Get the parameters of the kernel.
+        """
+        return {key: getattr(self, key) for key in self.__dict__.keys() if not key.startswith('__')}
+
 

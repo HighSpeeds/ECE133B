@@ -32,6 +32,20 @@ class MultivariateGaussianKernel(kernel):
         self.R = self.R + params_delta['R']
         self.Sigma = self.R.T @ self.R
 
+    def set_params(self, params: dict):
+        """Set the parameters of the kernel.
+        """
+        #if just R in params, we can update Sigma
+        if 'R' in params.keys():
+            self.R = params['R']
+            self.Sigma = self.R.T @ self.R
+        #if just Sigma in params, we can update R
+        elif 'Sigma' in params.keys():
+            self.Sigma = params['Sigma']
+            #Cholesky decomposition of the covariance matrix
+            L = np.linalg.cholesky(self.Sigma)
+            #we want it in terms of R
+            self.R = L.T
 
 if __name__ == "__main__":
     kernel = MultivariateGaussianKernel(np.array([[1, 0.5], [0.5, 1]]))
@@ -43,7 +57,7 @@ if __name__ == "__main__":
             p = kernel(x)
             gradient = kernel.get_gradient(x)
             kernel.update_params({'R': 0.001/p*gradient})
-        print(kernel.Sigma)
+        print(kernel.get_params())
         nll = 0
         for x in data:
             p = kernel(x)
