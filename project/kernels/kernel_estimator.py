@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import tqdm
+import multiprocessing as mp
 
 
 class KernelEstimatedPDF(object):
@@ -23,7 +24,8 @@ class KernelEstimatedPDF(object):
         return np.array(f)
 
 
-    def fit(self, X, n_folds = 5, lr = 0.001, epochs = 1000, learning_rate_scheduler=None, epsilon = 1e-3,batch_size = 1,weight_func = lambda x: 1):
+    def fit(self, X, n_folds = 5, lr = 0.001, epochs = 1000, learning_rate_scheduler=None, epsilon = 1e-3,batch_size = 1,weight_func = lambda x: 1,
+            multiprocessing = False, verbose = True,n_processes = 2):
         #save the training data
         self.X = X
         #split the data into n_folds
@@ -49,23 +51,49 @@ class KernelEstimatedPDF(object):
                 #for each observation in the test data
                 batch_gradient = 0
                 prev_params = self.kernel.get_params()
-                for i,x in enumerate(tqdm.tqdm(X_test)):
-                    g = 0
-                    #get the prediction
-                    f = self.predict([x],X_train)[0]
-                    #for each observation in the training data
-                    g = self.kernel.get_gradient(x - X_train)
-                    # for x_train in tqdm.tqdm(X_train):
-                    #     #compute the gradient
-                    #     g += self.kernel.get_gradient(x - x_train)
-                    g/=len(X_train)
-                    #the gradient is equal to the 
-                    batch_gradient += -g * weight_func(i) / f
-                    #update the parameters
-                    if (i+1)%batch_size == 0:
-                        self.kernel.update_params({'R': -learning_rate_scheduler(epoch)*batch_gradient})
-                        batch_gradient = 0
-                self.kernel.update_params({'R': -learning_rate_scheduler(epoch)*batch_gradient})
+
+                X_test_batched = np.array_split(X_test, len(X_test)//batch_size)
+                for batch in tqdm.tqdm(X_test_batched):
+                    F = []
+                    X_centered = []
+                    for x in batch:
+                        F.append(self.predict([x],X_train)[0])
+                        X_centered.append(x - X_train)
+                    if multiprocessing:
+                        with mp.Pool(n_processes) as pool:
+                            G = pool.starmap(self.get_gradient, zip(X_centered, F))
+                    else:
+                        G = []
+                        for i in range(len(batch)):
+                            G.append(self.get_gradient(X_centered[i], F[i]))
+                    #drop all the nan values
+                    G_no_nan = []
+                    for g in G:
+                        if not np.isnan(g).any():
+                            G_no_nan.append(g)
+                    G = np.array(G_no_nan)
+                    print(G)
+                    # print(G.shape)
+                    self.kernel.update_params({'R': -learning_rate_scheduler(epoch)*np.sum(G,axis=0)/len(X_train)})
+
+
+                # for i,x in enumerate(tqdm.tqdm(X_test)):
+                #     g = 0
+                #     #get the prediction
+                #     f = self.predict([x],X_train)[0]
+                #     #for each observation in the training data
+                #     g = self.kernel.get_gradient(x - X_train)
+                #     # for x_train in tqdm.tqdm(X_train):
+                #     #     #compute the gradient
+                #     #     g += self.kernel.get_gradient(x - x_train)
+                #     g/=len(X_train)
+                #     #the gradient is equal to the 
+                #     batch_gradient += -g * weight_func(i) / f
+                #     #update the parameters
+                #     if (i+1)%batch_size == 0:
+                #         self.kernel.update_params({'R': -learning_rate_scheduler(epoch)*batch_gradient})
+                #         batch_gradient = 0
+                # self.kernel.update_params({'R': -learning_rate_scheduler(epoch)*batch_gradient})
                 #if the parameters have converged, stop training
                 if np.linalg.norm(prev_params['R'] - self.kernel.get_params()['R']) < epsilon:
                     print('Converged')
@@ -80,6 +108,12 @@ class KernelEstimatedPDF(object):
         #set the parameters to the average of the optimal parameters
         self.Sigma = np.mean([params['Sigma'] for params in self.optimal_params], axis=0)
         self.kernel.set_params({'Sigma': self.Sigma})
+
+    def get_gradient(self, X_centered, f):
+        if f==0 or np.isnan(f):
+            return np.nan
+        g = self.kernel.get_gradient(X_centered)
+        return -g / f
 
     def save_params(self, path):
         np.savez(path, self.kernel.get_params())
@@ -115,6 +149,6 @@ if __name__ == "__main__":
     data = stats.multivariate_normal.rvs(mean=[0, 0], cov=np.array([[5, -1.5], [-1.5, 5]]), size=2000)
 
     model = KernelEstimatedPDF(kernel)
-    model.fit(data, n_folds=5, lr=0.001, epochs=100, epsilon=1e-3, batch_size=20  )
+    model.fit(data, n_folds=5, lr=0.01, epochs=10, epsilon=1e-3, batch_size=20  )
     print(model.score(data))
     print(model.get_pseudo_covariance())

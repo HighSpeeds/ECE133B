@@ -31,6 +31,7 @@ class MultivariateGaussianKernel(kernel):
     def __init__(self, Sigma_init):
         super().__init__()
         self.Sigma = Sigma_init
+        print(self.Sigma)
         #Cholesky decomposition of the covariance matrix
         L = np.linalg.cholesky(self.Sigma)
         #we want it in terms of R
@@ -38,7 +39,8 @@ class MultivariateGaussianKernel(kernel):
         self.calculate_invs()
 
     def __call__(self, x):
-        return stats.multivariate_normal.pdf(x, cov=self.Sigma)
+        # print(self.Sigma)
+        return stats.multivariate_normal.pdf(x, cov=self.Sigma,allow_singular=True)
     
     def calculate_invs(self):
         self.R_inv = np.linalg.inv(self.R)
@@ -62,16 +64,29 @@ class MultivariateGaussianKernel(kernel):
     def update_params(self, params_delta: dict):
         """Update the parameters of the kernel.
         """
-        if type(params_delta['R'])==float:
+        if type(params_delta['R'])==float or type(params_delta['R'])==np.float64:
             # print('nan')
             return
         if np.isnan(params_delta['R']).any():
             print('nan')
             return
         #zero out the values below the diagonal
-        params_delta['R'] = np.triu(params_delta['R'])
+        try:
+            params_delta['R'] = np.triu(params_delta['R'])
+        except:
+            print(params_delta['R'])
+            print(type(params_delta['R']))
+            raise ValueError
+        y = np.diagonal(self.R)
+        x = np.log(y)
         self.R = self.R + params_delta['R']
+        #if the value on the diagonal is negative, we set it to 0.001
+        self.R[np.diag_indices_from(self.R)] = np.maximum(np.diagonal(self.R), 0.001)
+        
         self.Sigma = self.R.T @ self.R
+        print(self.Sigma)
+        #check if sigma is positive definite
+        
         self.calculate_invs()
 
     def set_params(self, params: dict):
@@ -89,6 +104,13 @@ class MultivariateGaussianKernel(kernel):
             #we want it in terms of R
             self.R = L.T
         
+        self.calculate_invs()
+
+    def randomized_init(self):
+        self.R = np.random.randn(self.R.shape[0], self.R.shape[1])
+        self.R[np.diag_indices_from(self.R)] = np.maximum(np.diagonal(self.R), 0.001)
+        self.R = np.triu(self.R)
+        self.Sigma = self.R.T @ self.R
         self.calculate_invs()
 
 if __name__ == "__main__":

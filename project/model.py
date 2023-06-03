@@ -18,7 +18,7 @@ class model:
         # X = X.array()
         self.X = np.array(X)
         self.kernel_estimator.fit(X,**kernel_estimator_params)
-        self.second_mmt = self.kernel_estimator.kernel.get_second_moment()
+        self.second_mmt = self.kernel_estimator.get_pseudo_covariance()
         self.average_return = self.kernel_estimator.get_average_return()
         self.optimal_weights = optimize_portfolio(self.average_return,self.second_mmt)
 
@@ -63,7 +63,7 @@ if __name__=="__main__":
     # print(initial_guess)
     kernel = MultivariateGaussianKernel(initial_guess)
     Model = model(kernel)
-    Model.fit(train,dict(n_folds=5, lr=0.001, epochs=10, epsilon=1e-3, batch_size=20))
+    Model.fit(train,dict(n_folds=5, lr=0.001, epochs=10, epsilon=1e-3, batch_size=20,multiprocessing = True))
 
     w = Model.get_weights()
     os.makedirs('runs/naiveKernel/',exist_ok=True)
