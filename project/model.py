@@ -59,11 +59,13 @@ if __name__=="__main__":
     train = changes[:int(changes.shape[0]*0.8)]
     test = changes[int(changes.shape[0]*0.8):]
     # print(train.shape)
-    initial_guess = 0.5*np.ones(train.shape[1])+0.5*np.eye(train.shape[1])
-    # print(initial_guess)
+    print(np.mean(train,axis=0).reshape(-1,1)@np.mean(train,axis=0).reshape(1,-1))
+    initial_guess = np.cov(train.T)*train.shape[0]
+    print(initial_guess)
+    # # print(initial_guess)
     kernel = MultivariateGaussianKernel(initial_guess)
     Model = model(kernel)
-    Model.fit(train,dict(n_folds=5, lr=0.001, epochs=10, epsilon=1e-3, batch_size=20,multiprocessing = True))
+    Model.fit(train,dict(n_folds=5, lr=0.0001, epochs=5, epsilon=1e-3, batch_size=20,multiprocessing = False))
 
     w = Model.get_weights()
     os.makedirs('runs/naiveKernel/',exist_ok=True)
@@ -75,7 +77,7 @@ if __name__=="__main__":
     print("train sharpe ratio: ", np.mean(train_changes)/np.std(train_changes)*np.sqrt(252))
     print("test sharpe ratio: ", np.mean(test_changes)/np.std(test_changes)*np.sqrt(252))
     #save w
-    np.save('weights/naive.npy',w)
+    np.save('weights/naiveKernel.npy',w)
     import matplotlib.pyplot as plt
     plt.plot(np.cumprod(1+changes@w))
     plt.axvline(x=int(changes.shape[0]*0.8),color='r')

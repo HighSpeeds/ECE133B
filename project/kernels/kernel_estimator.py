@@ -72,7 +72,7 @@ class KernelEstimatedPDF(object):
                         if not np.isnan(g).any():
                             G_no_nan.append(g)
                     G = np.array(G_no_nan)
-                    print(G)
+                    # print(G)
                     # print(G.shape)
                     self.kernel.update_params({'R': -learning_rate_scheduler(epoch)*np.sum(G,axis=0)/len(X_train)})
 

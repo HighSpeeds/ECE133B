@@ -40,11 +40,18 @@ class MultivariateGaussianKernel(kernel):
 
     def __call__(self, x):
         # print(self.Sigma)
-        return stats.multivariate_normal.pdf(x, cov=self.Sigma,allow_singular=True)
+        if np.any(np.isnan(self.Gaussian.pdf(x))):
+            print('nan')
+            print(self.Sigma)
+            print(self.R)
+            raise ValueError
+        
+        return self.Gaussian.pdf(x)
     
     def calculate_invs(self):
         self.R_inv = np.linalg.inv(self.R)
         self.Sigma_inv = np.linalg.inv(self.Sigma)
+        self.Gaussian = stats.multivariate_normal(cov=self.Sigma,allow_singular=True)
     
     def get_gradient(self, x):
         #if x is one dimensional:
@@ -80,11 +87,11 @@ class MultivariateGaussianKernel(kernel):
         y = np.diagonal(self.R)
         x = np.log(y)
         self.R = self.R + params_delta['R']
-        #if the value on the diagonal is negative, we set it to 0.001
-        self.R[np.diag_indices_from(self.R)] = np.maximum(np.diagonal(self.R), 0.001)
+        # #if the value on the diagonal is negative, we set it to 0.001
+        # self.R[np.diag_indices_from(self.R)] = np.maximum(np.diagonal(self.R))
         
         self.Sigma = self.R.T @ self.R
-        print(self.Sigma)
+        # print(self.Sigma)
         #check if sigma is positive definite
         
         self.calculate_invs()
@@ -99,10 +106,14 @@ class MultivariateGaussianKernel(kernel):
         #if just Sigma in params, we can update R
         elif 'Sigma' in params.keys():
             self.Sigma = params['Sigma']
-            #Cholesky decomposition of the covariance matrix
-            L = np.linalg.cholesky(self.Sigma)
-            #we want it in terms of R
-            self.R = L.T
+            try:
+                #Cholesky decomposition of the covariance matrix
+                L = np.linalg.cholesky(self.Sigma)
+                #we want it in terms of R
+                self.R = L.T
+            except:
+                print(self.Sigma)
+                # raise ValueError
         
         self.calculate_invs()
 
