@@ -40,17 +40,17 @@ class MultivariateGaussianKernel(kernel):
 
     def __call__(self, x):
         # print(self.Sigma)
-        if np.any(np.isnan(self.Gaussian.pdf(x))):
-            print('nan')
-            print(self.Sigma)
-            print(self.R)
-            raise ValueError
+        # if np.any(np.isnan(self.Gaussian.pdf(x))):
+        #     print('nan')
+        #     print(self.Sigma)
+        #     print(self.R)
+        #     raise ValueError
         
         return self.Gaussian.pdf(x)
     
     def calculate_invs(self):
         self.R_inv = np.linalg.inv(self.R)
-        self.Sigma_inv = np.linalg.inv(self.Sigma)
+        self.Sigma_inv = self.R_inv @ self.R_inv.T
         self.Gaussian = stats.multivariate_normal(cov=self.Sigma,allow_singular=True)
     
     def get_gradient(self, x):

@@ -5,6 +5,7 @@ import sklearn.cluster as skc
 from optimization import optimize_portfolio
 import matplotlib.pyplot as plt
 from model import *
+from kernels.lr_scheduler import *
 
 sp500_df = pd.read_csv('sp500.csv')
 sp500_df_price = pd.read_csv('sp500_price.csv')
@@ -41,21 +42,53 @@ cluster_weights = {}
 clusters = {}
 cluster_returns_train = []
 cluster_returns_test = []
+# cluster_params = []
+
+def fit(params):
+    train,fit_params,i = params
+    print("fitting cluster ",i)
+    cov_train = np.cov(train.T)
+    initial_guess = cov_train*train.shape[0]
+    kernel = MultivariateGaussianKernel(initial_guess)
+    Model = model(kernel)
+    Model.fit(train,fit_params)
+    weights = Model.get_weights()
+    print("fitted cluster ",i)
+    return weights
+
+#create params
+cluster_params = []
 for i in range(len(np.unique(clustering.labels_))):
     print("Cluster ",i)
     train_cluster = train[:,clustering.labels_==i]
     test_cluster = test[:,clustering.labels_==i]
-    cov_train_cluster = np.cov(train_cluster.T)
-    # mu_train_cluster = np.mean(train_cluster,axis=0)
-    initial_guess = cov_train_cluster*train.shape[0]
-    print(initial_guess)
-    # # print(initial_guess)
-    kernel = MultivariateGaussianKernel(initial_guess)
-    Model = model(kernel)
-    Model.fit(train_cluster,dict(n_folds=5, lr=0.0001, epochs=5, epsilon=1e-3, batch_size=20,multiprocessing = False))
-    weights = Model.get_weights()
-    cluster_weights[i] = weights
     clusters[i] = list(sp500_df.columns[clustering.labels_==i])
+    cluster_params = (train_cluster,dict(fit_method = 'no_cross_validate', train_test_split = 0.8,
+                         lr=0.0001, epochs=5, epsilon=1e-3, batch_size=20,multiprocessing = False,
+                         learning_rate_scheduler = exponential_decay(0.001,np.log(10))
+                         ),i)
+    # print("Cluster weights: ",cluster_weights[i])
+    # print("Cluster stocks: ",clusters[i])
+    # print("cluster sharpe train:", round(np.mean(train_cluster @ cluster_weights[i])/np.std(train_cluster @ cluster_weights[i])*np.sqrt(252),3))
+    # print("cluster sharpe test:", round(np.mean(test_cluster @ cluster_weights[i])/np.std(test_cluster @ cluster_weights[i])*np.sqrt(252),3))
+    # cluster_returns_train.append(train_cluster @ cluster_weights[i])
+    # cluster_returns_test.append(test_cluster @ cluster_weights[i])
+
+n_processes = 20
+from multiprocessing import Pool
+if n_processes != 1:
+    with Pool(n_processes) as p:
+        cluster_weights_raw = p.map(fit,cluster_params)
+else:
+    cluster_weights_raw  = []
+    for i in range(len(np.unique(clustering.labels_))):
+        cluster_weights_raw .append(fit(cluster_params[i]))
+
+cluster_weights = {}
+for i in range(len(np.unique(clustering.labels_))):
+    train_cluster = train[:,clustering.labels_==i]
+    test_cluster = test[:,clustering.labels_==i]
+    cluster_weights[i] = cluster_weights_raw[i]
     print("Cluster weights: ",cluster_weights[i])
     print("Cluster stocks: ",clusters[i])
     print("cluster sharpe train:", round(np.mean(train_cluster @ cluster_weights[i])/np.std(train_cluster @ cluster_weights[i])*np.sqrt(252),3))
@@ -89,7 +122,9 @@ print(initial_guess)
 # # print(initial_guess)
 kernel = MultivariateGaussianKernel(initial_guess)
 Model = model(kernel)
-Model.fit(cluster_returns_train,dict(n_folds=5, lr=0.0001, epochs=5, epsilon=1e-3, batch_size=20,multiprocessing = True))
+Model.fit(cluster_returns_train,dict(fit_method = 'no_cross_validate', train_test_split = 0.8, 
+                                     lr=0.0001, epochs=5, epsilon=1e-3, batch_size=20,multiprocessing = True,
+                                     learning_rate_scheduler = exponential_decay(0.001,np.log(10))))
 cluster_returns_weights = Model.get_weights()
 
 
@@ -108,7 +143,7 @@ print("S&P500 yearly return test:", 100*((sp500_df_price['^GSPC'].values[-1]/sp5
 
 #save the clusters and cluster weights
 
-np.save('weights/cluster_returns_weights.npy',cluster_returns_weights)
+np.save('weights/kerenl_cluster_returns_weights.npy',cluster_returns_weights)
 #creat the overall weights
 overall_weights = np.zeros((changes.shape[1],))
 for i in range(len(np.unique(clustering.labels_))):

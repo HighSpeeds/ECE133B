@@ -65,7 +65,8 @@ if __name__=="__main__":
     # # print(initial_guess)
     kernel = MultivariateGaussianKernel(initial_guess)
     Model = model(kernel)
-    Model.fit(train,dict(n_folds=5, lr=0.0001, epochs=5, epsilon=1e-3, batch_size=20,multiprocessing = False))
+    Model.fit(train,dict(fit_method = 'no_cross_validate', train_test_split = 0.8,
+                         lr=0.0001, epochs=5, epsilon=1e-3, batch_size=20,multiprocessing = False))
 
     w = Model.get_weights()
     os.makedirs('runs/naiveKernel/',exist_ok=True)
