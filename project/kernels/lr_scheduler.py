@@ -18,9 +18,10 @@ class cosineAnnealing:
 #test
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    scheduler = cosineAnnealing(10)
+    scheduler = exponential_decay(10**-3,np.log(10))
     lrs = []
     for i in range(100):
         lrs.append(scheduler(i))
+        print(lrs[-1])
     plt.plot(lrs)
     plt.show()
