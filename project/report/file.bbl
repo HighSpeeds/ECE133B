@@ -1,0 +1,27 @@
+\begin{thebibliography}{1}
+
+\bibitem{its_convex_if_you_tilt_your_head_a_bit}
+Theo Diamandis.
+\newblock It's convex if you tilt your head a bit.
+
+\bibitem{kingma2014adam}
+Diederik~P. Kingma and Jimmy Ba.
+\newblock Adam: A method for stochastic optimization, 2017.
+
+\bibitem{markowitz1952portfolio}
+Harry Markowitz.
+\newblock Portfolio selection.
+\newblock {\em The Journal of Finance}, 7(1):77--91, 1952.
+
+\bibitem{ng2002spectral}
+Andrew Ng, Michael Jordan, and Yair Weiss.
+\newblock On spectral clustering: Analysis and an algorithm.
+\newblock In T.~Dietterich, S.~Becker, and Z.~Ghahramani, editors, {\em
+  Advances in Neural Information Processing Systems}, volume~14. MIT Press,
+  2001.
+
+\bibitem{von2007tutorial}
+Ulrike von Luxburg.
+\newblock A tutorial on spectral clustering, 2007.
+
+\end{thebibliography}
