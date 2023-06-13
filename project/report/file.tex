@@ -49,7 +49,8 @@ also define the annualized Sharpe ratio as
     \text{Sharpe Ratio} = \frac{\mu_p}{\sigma_p}\sqrt{252}
 \end{equation}
 Where 252 is the number of trading days in a year. From now on we use the annualized Sharpe ratio and all further references 
-to Sharpe ratio will be the annualized Sharpe ratio.
+to Sharpe ratio will be the annualized Sharpe ratio. From now on we will only consider the case where we 
+buy and hold, ie at the beginning of the period we allocate all of our capital into the portfolio and then leave it there for the entire period.
 \subsection{Modern Portfolio Theory}
 The most common approach to create the portfolio that maximizes the Sharpe ratio is Modern Portfolio Theory (MPT). MPT was first
 introduced by Harry Markowitz in 1952 \cite{markowitz1952portfolio}. Let us define
@@ -235,7 +236,9 @@ Therefore we have that:
     \frac{\partial}{\partial R}\mathcal{L}(x_1,\dots,x_k) \approx \sum_{i=1}^k \frac{1}{\hat{f}(x_i)} \sum_{j=1}^n K_{\theta}(x_i-x_j')\left(R^{-T} - \Sigma^{-1}(x_i-x_j')(x_i-x_j')^T R^{-1}\right)
 \end{equation}
 From this we can just optimize $R$ using stochastic gradient descent, or other more advanced methods such as ADAM. For this 
-report we just used stochastic gradient descent with $\eta=0.01$ and $T=10$ epochs with minibatching the data into 20 batches.
+report we just used stochastic gradient descent with $\eta=0.01$ and $T=10$ epochs with minibatching the data into 20 batches. We 
+separated the train data into 80\% train and 20\% validation data. We then used the validation data as the test values we
+used to calculate the negative log likelihood.
 \subsubsection{Obtaining a More Accurate Sharpe Ratio}
 As we noted before what we want to optimize is the sharpe ratio:
 What we want to optimize is the sharpe 
